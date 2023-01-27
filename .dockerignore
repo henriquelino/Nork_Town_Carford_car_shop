@@ -1,0 +1,7 @@
+htmlcov
+venv
+__pycache__
+.env
+.coverage
+annotations.md
+db.sqlite3
