@@ -1,0 +1,7 @@
+.coverage
+__pycache__
+changelog.d/
+__pycache__
+UNKNOWN.egg-info
+
+*.sqlite3
