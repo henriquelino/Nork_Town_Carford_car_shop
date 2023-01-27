@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block content %}
+
+<div class="container px-4 py-5" id="icon-grid">
+  {% if not user_autenticated %}
+    <h2 class="pb-2 border-bottom">Please login before doing anything ;)</h2>
+  {% else %}
+    <h2 class="pb-2 border-bottom">Welcome {{user}}! Let's sell some cars!</h2>
+  
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4 py-5">
+      
+      <div class="col d-flex align-items-start" style="transform: rotate(0);">
+        <svg class="bi text-muted flex-shrink-0 me-3" width="1.75em" height="1.75em"><use xlink:href="#speedometer2"></use></svg>
+        <div>
+          <h4 class="fw-bold mb-0">Sales</h4>
+          <p>Get wild and crazy</p>
+        </div>
+        <a href="{% url 'sales_crud' %}" class="stretched-link"></a>
+      </div>
+      
+      <div class="col d-flex align-items-start" style="transform: rotate(0);">
+        <svg class="bi text-muted flex-shrink-0 me-3" width="1.75em" height="1.75em"><use xlink:href="#grid"></use></svg>
+        <div>
+          <h4 class="fw-bold mb-0">Cars</h4>
+          <p>Who needs a boring spreadsheet when you can ogle shiny vehicles here instead?</p>
+        </div>
+        <a href="{% url 'cars_crud' %}" class="stretched-link"></a>
+      </div>
+      
+      <div class="col d-flex align-items-start" style="transform: rotate(0);">
+        <svg class="bi text-muted flex-shrink-0 me-3" width="1.75em" height="1.75em"><use xlink:href="#people-circle"></use></svg>
+        <div>
+          <h4 class="fw-bold mb-0">Customers</h4>
+          <p>Create a customer, be their hero and save the day with this button!</p>
+        </div>
+        <a href="{% url 'customers_crud' %}" class="stretched-link"></a>
+      </div>
+      
+    </div>
+  {% endif %}
+  </div>
+{% endblock %}

@@ -1,0 +1,156 @@
+{% extends 'base.html' %}
+
+{% load django_bootstrap5 %}
+
+{% block headcontent %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.js"></script>
+{% endblock %}
+{% block content %}
+
+<!-- Lista de cartões -->
+<div class="container">
+    <h1>Cars</h1>
+    <hr>    
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createCarModal">
+        New
+    </button>
+    <hr>
+</div>
+<div class="container">
+    {% if not cars %}
+    
+    <h1>No cars found</h1>
+    {% else %}
+    
+    <table class="table table-striped" id="table_id" class="display">
+        <thead>
+            <tr>
+                <td scope="col">Name</td>
+                <td scope="col">Price</td>
+                <td scope="col">Color</td>
+                <td scope="col">Model</td>
+                <td scope="col">Owner</td>
+                <td scope="col">*</td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for car in cars %}
+            <tr>
+                <td scope="row">{{ car.name }}</td>
+                <td scope="row">{{ car.price }}</td>
+                <td scope="row">{{ car.color }}</td>
+                <td scope="row">{{ car.model }}</td>
+                <td scope="row">{{ car.owner }}</td>
+                
+                <td scope="row">
+                    
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#updateCar{{car.id}}">
+                        Edit
+                    </button>
+        
+                    <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                        data-bs-target="#deleteCar{{car.id}}">
+                        Delete
+                    </button>
+                </td>
+    
+            </tr>
+    
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+    
+</div>
+
+
+<!-- Delete Modals -->
+{% for car in cars %}
+<div class="modal fade" id="deleteCar{{car.id}}" tabindex="-1" aria-labelledby="deleteCar{{car.id}}Label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="deleteCar{{car.id}}Label">Delete Car</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <h1>This can't be undone, are you sure you want to delete the car {{car.name}}?</h1>
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <input type="hidden" name="action" value="delete">
+                    <input type="hidden" name="delete_car_id" value="{{car.id}}">
+    
+                    {% bootstrap_button button_type="submit" button_class="btn btn-danger" content="Delete" %}
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Update Modals -->
+{% for car, form in update_forms %}
+<div class="modal fade" id="updateCar{{car.id}}" tabindex="-1" aria-labelledby="updateCar{{car.id}}Label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="updateCar{{car.id}}Label">Update Car</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="update">
+                    <input type="hidden" name="update_car_id" value="{{car.id}}">
+                    {% bootstrap_form form %}
+                    {% bootstrap_button button_type="submit" content="Save" %}
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+<!-- Create Modal -->
+<div class="modal fade" id="createCarModal" tabindex="-1" aria-labelledby="createCarModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="createCCModalLabel">New car</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="create">
+                    {% bootstrap_form form %}
+                    {% bootstrap_button button_type="submit" content="Save" %}
+                    
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+    
+<script>
+    $(document).ready( function () {
+        $('#table_id').DataTable();
+    } );
+    
+</script>
+{% endblock  %}

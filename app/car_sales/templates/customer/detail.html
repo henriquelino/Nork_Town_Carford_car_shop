@@ -1,0 +1,122 @@
+{% extends 'base.html' %}
+
+{% load django_bootstrap5 %}
+
+{% block headcontent %}
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Customer {{ customer.name }}</h1>
+    <hr>
+    <p>Name = {{ customer.name }}</p>
+    <p>Address = {{ customer.address }}</p>
+    <p>Phone = {{ customer.phone }}</p>
+    <hr>
+    
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+        data-bs-target="#updateCustomerModal">
+        Edit
+    </button>
+
+    <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+        data-bs-target="#deleteCustomerModal">
+        Delete
+    </button>
+    
+</div>
+
+<div class="container">
+    {% if not cars %}
+    <h1>No cars for this customer. Make their day happier selling a new one :)</h1>
+    {% else %}
+    <hr>
+    <div class="container">
+        <h2>Cars of this customer</h2>
+        <table class="table table-striped" id="table_id" class="display">
+            <thead>
+                <tr>
+                    <td scope="col">Name</td>
+                    <td scope="col">Price</td>
+                    <td scope="col">Color</td>
+                    <td scope="col">Model</td>
+                </tr>
+            </thead>
+            <tbody>
+                {% for car in cars %}
+                <tr>
+                    <td scope="row">{{ car.name }}</td>
+                    <td scope="row">{{ car.price }}</td>
+                    <td scope="row">{{ car.color }}</td>
+                    <td scope="row">{{ car.model }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <hr>
+    </div>
+    {% endif %}
+</div>
+<!-- Update Customer -->
+<div class="modal fade" id="updateCustomerModal" tabindex="-1" aria-labelledby="updateCustomerLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="updateCustomerLabel">Update Customer</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <form action="{% url 'customers_crud' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="update">
+                    <input type="hidden" name="update_customer_id" value="{{customer.id}}">
+                    {% bootstrap_form form %}
+                    {% bootstrap_button button_type="submit" content="Save" %}
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Customer -->
+<div class="modal fade" id="deleteCustomerModal" tabindex="-1" aria-labelledby="deleteCustomerLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="deleteCustomerLabel">Delete customer</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+
+                <h1>Are you sure you want to delete this customer?</h1>
+                <form action="{% url 'customers_crud' %}" method="post">
+                    {% csrf_token %}
+                    
+                    <input type="hidden" name="action" value="delete">
+                    <input type="hidden" name="delete_customer_id" value="{{customer.id}}">
+                    <input type="hidden" name="from_detail" value="1">
+    
+                    {% bootstrap_button button_type="submit" button_class="btn btn-danger" content="Delete" %}
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready( function () {
+        $('#table_id').DataTable();
+    } );
+    
+</script>
+{% endblock  %}
