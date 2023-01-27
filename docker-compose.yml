@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  app:
+    build: .
+    environment:
+      SECRET_KEY: verysecurekey
+      DJANGO_SUPERUSER_USERNAME: admin
+      DJANGO_SUPERUSER_EMAIL: admin@admin.com
+      DJANGO_SUPERUSER_PASSWORD: admin
+
+      DB_ENGINE: django.db.backends.postgresql
+      DB_NAME: mydatabase
+      DB_USER: mydatabaseuser
+      DB_PASS: mypassword
+      DB_HOST: db # same name as the postgres service
+      DB_PORT: 5432
+
+    ports:
+      - 8008:8000
+    links:
+      - db
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: mydatabaseuser
+      POSTGRES_PASSWORD: mypassword
+
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
