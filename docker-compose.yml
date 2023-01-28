@@ -4,12 +4,15 @@ services:
   app:
     build: .
     environment:
-      SECRET_KEY: verysecurekey
-      DJANGO_SUPERUSER_USERNAME: admin
-      DJANGO_SUPERUSER_EMAIL: admin@admin.com
-      DJANGO_SUPERUSER_PASSWORD: admin
+      DEBUG: 1 # 1=true, 0=false
+      ALLOWED_HOSTS: "127.0.0.1" # split by ',' do not use spaces. eg: "127.0.0.1,192.168.0.1,192.168.0.2"
 
-      DB_ENGINE: django.db.backends.postgresql
+      SECRET_KEY: verysecurekey
+      SUPERUSER_USERNAME: admin
+      SUPERUSER_EMAIL: admin@admin.com
+      SUPERUSER_PASSWORD: admin
+
+      DB_ENGINE: django.db.backends.postgresql_psycopg2 # or postgresql
       DB_NAME: mydatabase
       DB_USER: mydatabaseuser
       DB_PASS: mypassword
@@ -33,6 +36,8 @@ services:
       POSTGRES_USER: mydatabaseuser
       POSTGRES_PASSWORD: mypassword
 
+    ports:
+      - 5432:5432
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 5s
