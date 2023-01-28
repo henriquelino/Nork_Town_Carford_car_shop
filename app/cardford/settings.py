@@ -26,9 +26,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-60bar=sco2fufkc4haisy%$wd!!!i@vjaj*))b8tkd=6$%4-qa'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = str(os.environ.get('DEBUG', '1')) == '1'
 
-ALLOWED_HOSTS = ['127.0.0.1']
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', '').split(',')
 
 # Application definition
 
@@ -85,20 +85,14 @@ WSGI_APPLICATION = 'cardford.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': os.environ.get('DB_ENGINE',
-                                 'django.db.backends.postgresql'),
-        'NAME': os.environ.get('DB_NAME',
-                               'mydatabase'),
-        'USER': os.environ.get('DB_USER',
-                               'mydatabaseuser'),
-        'PASSWORD': os.environ.get('DB_PASS',
-                                   'mypassword'),
-        'HOST': os.environ.get('DB_HOST',
-                               '127.0.0.1'),
-        'PORT': os.environ.get('DB_PORT',
-                               '5432')
+        'ENGINE': os.environ.get('DB_ENGINE', 'django.db.backends.sqlite3'),
+        'NAME': os.environ.get('DB_NAME', './db.sqlite3'),
+        'USER': os.environ.get('DB_USER', ''),
+        'PASSWORD': os.environ.get('DB_PASS', ''),
+        'HOST': os.environ.get('DB_HOST', ''),
+        'PORT': os.environ.get('DB_PORT', '')
     }
-}
+}  # yapf:disable
 
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
