@@ -1,4 +1,5 @@
-from car_sales.models import Customer, User
+from car_sales.models import Customer
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.test import Client, TestCase
 from django.urls import reverse_lazy
@@ -9,7 +10,7 @@ class CustomerCrudTestCase(TestCase):
 
     def setUp(self):
 
-        self.test_salesperson = User(username="test salesperson", email="test_user@email.com", is_staff=True)
+        self.test_salesperson = get_user_model()(username="test salesperson", email="test_user@email.com", is_staff=True)
         permission = Permission.objects.get(name='Can sell cars')
         self.test_salesperson.save()
         self.test_salesperson.user_permissions.add(permission)
@@ -138,3 +139,11 @@ class CustomerCrudTestCase(TestCase):
         r = self.client.post(self.url, data=data)
         self.assertEqual(r.status_code, 200)
         self.assertEqual(r.context.get("form_errors"), {'name': ['Ensure this value has at most 200 characters (it has 201).']})
+
+    def test_unknow_action(self):
+        data = {
+            "action": "not_exists",
+        }
+        r = self.client.post(self.url, data=data)
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.context['form_errors'], 'Unknow action!')

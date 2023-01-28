@@ -1,7 +1,8 @@
 from datetime import datetime
 from random import choice, randint
 
-from car_sales.models import Car, CarColor, CarModel, Customer, Sales, User
+from car_sales.models import Car, CarColor, CarModel, Customer, Sales
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.core.exceptions import PermissionDenied
 from django.db.utils import IntegrityError
@@ -12,7 +13,7 @@ from loguru import logger
 class NamesTestCase(TestCase):
 
     def setUp(self):
-        self.test_salesperson = User(username="test salesperson", email="test_user@email.com", is_staff=True)
+        self.test_salesperson = get_user_model()(username="test salesperson", email="test_user@email.com", is_staff=True)
         self.test_customer = Customer(name="test customer", address="street", phone="123456789")
 
         self.car_data = dict(
@@ -44,7 +45,7 @@ class MaximumCarsPerPersonTestCase(TestCase):
 
     def setUp(self):
         self.sale = None
-        self.test_salesperson = User(username="test salesperson", email="test_user@email.com", is_staff=True)
+        self.test_salesperson = get_user_model()(username="test salesperson", email="test_user@email.com", is_staff=True)
         permission = Permission.objects.get(name='Can sell cars')
         self.test_salesperson.save()
         self.test_salesperson.user_permissions.add(permission)
@@ -95,7 +96,7 @@ class SaleTestCase(TestCase):
 
     def setUp(self):
         self.sale = None
-        self.test_salesperson = User(username="test salesperson", email="test_user@email.com", is_staff=True)
+        self.test_salesperson = get_user_model()(username="test salesperson", email="test_user@email.com", is_staff=True)
         self.test_salesperson.save()
 
         self.test_customer = Customer(name="test customer", address="street", phone="123456789")

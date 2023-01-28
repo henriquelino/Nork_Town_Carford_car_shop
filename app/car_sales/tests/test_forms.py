@@ -2,7 +2,8 @@ from datetime import datetime
 from random import choice
 
 from car_sales.forms import SaleForm
-from car_sales.models import Car, CarColor, CarModel, Customer, User
+from car_sales.models import Car, CarColor, CarModel, Customer
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.test import TestCase
 from loguru import logger
@@ -13,7 +14,7 @@ class SaleTestCase(TestCase):
     def setUp(self):
         self.sale = None
         permission = Permission.objects.get(name='Can sell cars')
-        self.test_salesperson = User(username="test salesperson", email="test_user@email.com", is_staff=True)
+        self.test_salesperson = get_user_model()(username="test salesperson", email="test_user@email.com", is_staff=True)
         self.test_salesperson.save()
         self.test_salesperson.user_permissions.add(permission)
         self.test_salesperson.refresh_from_db()

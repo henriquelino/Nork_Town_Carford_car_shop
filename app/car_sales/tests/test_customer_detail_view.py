@@ -1,4 +1,5 @@
-from car_sales.models import Customer, User
+from car_sales.models import Customer
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.test import Client, TestCase
 from django.urls import reverse_lazy
@@ -9,7 +10,7 @@ class CustomerCrudTestCase(TestCase):
 
     def setUp(self):
 
-        self.test_salesperson = User(username="test salesperson", email="test_user@email.com", is_staff=True)
+        self.test_salesperson = get_user_model()(username="test salesperson", email="test_user@email.com", is_staff=True)
         permission = Permission.objects.get(name='Can sell cars')
         self.test_salesperson.save()
         self.test_salesperson.user_permissions.add(permission)

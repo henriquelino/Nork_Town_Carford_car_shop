@@ -1,17 +1,19 @@
 from datetime import datetime, timedelta
 from random import choice
 
-from car_sales.models import Car, CarColor, CarModel, Customer, Sales, User
+from car_sales.models import Car, CarColor, CarModel, Customer, Sales
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.test import Client, TestCase
 from django.urls import reverse_lazy
+from loguru import logger
 
 
 class SalesCrudTestCase(TestCase):
 
     def setUp(self):
 
-        self.test_salesperson = User(username="test salesperson", email="test_user@email.com", is_staff=True)
+        self.test_salesperson = get_user_model()(username="test salesperson", email="test_user@email.com", is_staff=True)
         permission = Permission.objects.get(name='Can sell cars')
         self.test_salesperson.save()
         self.test_salesperson.user_permissions.add(permission)
@@ -26,13 +28,26 @@ class SalesCrudTestCase(TestCase):
 
         return
 
-    def test_without_referer(self):
-        request = self.client_with_referer.get(self.url)
-        self.assertEqual(request.status_code, 200)
+    def test_basic(self):
+        r = self.client_with_referer.get(self.url)
+        self.assertEqual(r.status_code, 200)
+        self.assertTrue(r.context['form'].base_fields['salesperson'].disabled)
 
-        request = self.client.get(self.url)
-        self.assertEqual(request.status_code, 200)
+        r = self.client.get(self.url)
+        self.assertEqual(r.status_code, 200)
+        self.assertTrue(r.context['form'].base_fields['salesperson'].disabled)
         return
+
+    def test_form_enable_field_if_super(self):
+
+        superuser = get_user_model().objects.create_superuser('admin', 'admin@myproject.com', 'password')
+
+        client = Client()
+        client.force_login(superuser)
+
+        r = client.get(self.url)
+        self.assertEqual(r.status_code, 200)
+        self.assertFalse(r.context['form'].base_fields['salesperson'].disabled)
 
     def test_delete_sale_wo_referer(self):
         self.test_customer = Customer(name="test customer", address="street", phone="123456789")
@@ -200,3 +215,11 @@ class SalesCrudTestCase(TestCase):
         r = self.client.post(self.url, data=data)
         self.assertEqual(r.status_code, 200)
         self.assertEqual(r.context.get("form_errors"), {'purchase_date': ['Enter a valid date.']})
+
+    def test_unknow_action(self):
+        data = {
+            "action": "not_exists",
+        }
+        r = self.client.post(self.url, data=data)
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.context['form_errors'], 'Unknow action!')
