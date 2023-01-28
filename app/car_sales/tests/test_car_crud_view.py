@@ -1,6 +1,7 @@
 from random import choice, randint
 
-from car_sales.models import Car, CarColor, CarModel, Customer, Sales, User
+from car_sales.models import Car, CarColor, CarModel
+from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.test import Client, TestCase
 from django.urls import reverse_lazy
@@ -11,7 +12,7 @@ class CarCRUDViewTest(TestCase):
 
     def setUp(self):
 
-        self.test_salesperson = User(username="test salesperson", email="test_user@email.com", is_staff=True)
+        self.test_salesperson = get_user_model()(username="test salesperson", email="test_user@email.com", is_staff=True)
         permission = Permission.objects.get(name='Can sell cars')
         self.test_salesperson.save()
         self.test_salesperson.user_permissions.add(permission)
@@ -153,3 +154,11 @@ class CarCRUDViewTest(TestCase):
 
         with self.assertRaises(Car.DoesNotExist):
             Car.objects.get(name=self.car_data['name'])
+
+    def test_unknow_action(self):
+        data = {
+            "action": "not_exists",
+        }
+        r = self.client.post(self.url, data=data)
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(r.context['form_errors'], 'Unknow action!')
