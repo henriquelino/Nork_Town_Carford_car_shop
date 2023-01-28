@@ -2,7 +2,7 @@ from datetime import datetime
 from random import choice
 
 from car_sales.forms import SaleForm
-from car_sales.models import Car, CarColor, CarModel, Customer
+from car_sales.models import Car, CarColor, CarModel, Customer, Sales
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Permission
 from django.test import TestCase
@@ -30,7 +30,6 @@ class SaleTestCase(TestCase):
         return
 
     def test_save_sale_form(self):
-        if self.sales_form.errors:
-            logger.debug(f"{self.sales_form.errors = }")
         self.sales_form.save()
-        self.assertTrue(True)
+
+        self.assertTrue(Sales.objects.filter(salesperson=self.test_salesperson, car=self.test_car, customer=self.test_customer).exists())
