@@ -64,6 +64,9 @@ class CarCRUD(LoginRequiredMixin, TemplateView):
             else:
                 messages.success(request, "Car created!")
                 form.save(commit=True)
+        else:
+            context['form_errors'] = "Unknow action!"
+            messages.error(request, "Unknow action!")
         # --------------------------------------------------
         context.update(self.get_context_data())
 
@@ -85,6 +88,8 @@ class SalesCRUD(LoginRequiredMixin, TemplateView):
         if not self.request.user.is_superuser:
             form.base_fields["salesperson"].initial = self.request.user
             form.base_fields['salesperson'].disabled = True
+        else:
+            form.base_fields['salesperson'].disabled = False
 
         # form.base_fields['car'].queryset = True
 
@@ -122,6 +127,10 @@ class SalesCRUD(LoginRequiredMixin, TemplateView):
             else:
                 messages.success(request, "Sale created!")
                 form.save(commit=True)
+        else:
+            context['form_errors'] = "Unknow action!"
+            messages.error(request, "Unknow action!")
+
         # --------------------------------------------------
         context.update(self.get_context_data())
 
@@ -170,6 +179,9 @@ class CustomerCRUD(LoginRequiredMixin, TemplateView):
             else:
                 messages.success(request, "Customer created!")
                 form.save(commit=True)
+        else:
+            context['form_errors'] = "Unknow action!"
+            messages.error(request, "Unknow action!")
         # --------------------------------------------------
         context.update(self.get_context_data())
 
