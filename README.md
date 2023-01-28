@@ -21,6 +21,8 @@ run tests with
 *tip: the extra arguments for the command comes from setup.cfg file*
 
 
-build docker and run with
-`docker-compose up --force-recreate`
-add `--detach` to run on background
+build docker
+`docker-compose build`
+
+ and run with
+ `docker-compose up`
